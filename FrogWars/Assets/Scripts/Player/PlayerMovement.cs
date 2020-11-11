@@ -9,8 +9,12 @@ public class PlayerMovement : MonoBehaviour
     // Multiplier for the speed of the frog
     public float speed = 50f;
 
+    // Speed of the jump of the frog
+    // NEEDS TO BE BIGGER THAN MOVEMENT
+    public float jumpSpeed = 60f;
+
     float jumpForce = 0f;
-    readonly float maxJumpForce = 1000000f;
+    readonly float maxJumpForce = 100f;
 
     Rigidbody2D rb2D;
 
@@ -52,16 +56,49 @@ public class PlayerMovement : MonoBehaviour
                 while (Input.GetKey(KeyCode.Space))
                 {
                     if (jumpForce < maxJumpForce)
-                        jumpForce += 200f;
+                        jumpForce += 2f;
                     
                     yield return new WaitForSeconds(.02f);
                 }
 
-                rb2D.AddForce(transform.up * jumpForce, ForceMode2D.Force);
+                StartCoroutine(FrogJump());
 
                 print("Jumped successfully!"); // FOR DEBUG
             }
             
+            yield return null;
+        }
+    }
+
+    IEnumerator FrogJump()
+    {
+        Vector3 dest = transform.position + (transform.up * jumpForce);
+
+        float initScale = transform.localScale.x;
+        float midScale = initScale * 3;
+
+        bool midReached = false;
+
+        // To make the scale of the frog peak at the middle
+        // and then decrease as the frog goes down
+        float initDis = Vector3.Distance(transform.position, dest);
+
+        // How big it will change each time
+        float scaleChange = (midScale - initScale) / initDis;
+
+        while (Vector3.Distance(transform.up, dest) != 0)
+        {
+            Vector3 moveTo = Vector3.MoveTowards(transform.position, dest, jumpSpeed * Time.deltaTime);
+            rb2D.MovePosition(moveTo);
+
+            if (!midReached)
+                transform.localScale += new Vector3(scaleChange, scaleChange, 0f);
+            else
+                transform.localScale -= new Vector3(scaleChange, scaleChange, 0f);
+
+            if (transform.localScale.x >= midScale)
+                midReached = true;
+
             yield return null;
         }
     }
