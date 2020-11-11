@@ -11,9 +11,10 @@ public class PlayerMovement : MonoBehaviour
 
     // Speed of the jump of the frog
     // NEEDS TO BE BIGGER THAN MOVEMENT
-    public float jumpSpeed = 60f;
+    public float maxJumpSpeed = 90f;
 
     float jumpForce = 0f;
+
     readonly float maxJumpForce = 100f;
 
     Rigidbody2D rb2D;
@@ -73,34 +74,43 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator FrogJump()
     {
         Vector3 dest = transform.position + (transform.up * jumpForce);
+        float initDis = Vector3.Distance(transform.position, dest);
 
         float initScale = transform.localScale.x;
-        float midScale = initScale * 3;
 
         bool midReached = false;
 
-        // To make the scale of the frog peak at the middle
-        // and then decrease as the frog goes down
-        float initDis = Vector3.Distance(transform.position, dest);
-
         // How big it will change each time
-        float scaleChange = (midScale - initScale) / initDis;
+        float scaleChange;
 
-        while (Vector3.Distance(transform.up, dest) != 0)
+        float jumpSpeed = maxJumpSpeed;
+
+        while (Vector3.Distance(transform.position, dest) >= 1f)
         {
             Vector3 moveTo = Vector3.MoveTowards(transform.position, dest, jumpSpeed * Time.deltaTime);
+            
+            scaleChange = Vector3.Distance(transform.position, moveTo) / (initDis / 2);
+
+            if (midReached)
+            {
+                transform.localScale -= new Vector3(scaleChange, scaleChange, 0f);
+            }
+            else
+            {
+                transform.localScale += new Vector3(scaleChange, scaleChange, 0f);
+            }
+
             rb2D.MovePosition(moveTo);
 
-            if (!midReached)
-                transform.localScale += new Vector3(scaleChange, scaleChange, 0f);
-            else
-                transform.localScale -= new Vector3(scaleChange, scaleChange, 0f);
-
-            if (transform.localScale.x >= midScale)
+            if (Vector3.Distance(transform.position, dest) <= initDis / 2)
+            {
                 midReached = true;
+            }
 
             yield return null;
         }
+
+        transform.localScale = new Vector3(initScale, initScale, 1f);
     }
 
     #endregion
