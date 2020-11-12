@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
 
     // Speed of the jump of the frog
     // NEEDS TO BE BIGGER THAN MOVEMENT
-    public float maxJumpSpeed = 90f;
+    public float jumpSpeed = 80f;
 
     float jumpForce = 0f;
 
@@ -73,8 +73,13 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator FrogJump()
     {
+        List<float> scales = new List<float>();
+        int scIndex = 0;
+        bool listIndexCounted = false;
+
         Vector3 dest = transform.position + (transform.up * jumpForce);
         float initDis = Vector3.Distance(transform.position, dest);
+        float midDis = Vector3.Distance(transform.position, dest - transform.position);
 
         float initScale = transform.localScale.x;
 
@@ -83,20 +88,29 @@ public class PlayerMovement : MonoBehaviour
         // How big it will change each time
         float scaleChange;
 
-        float jumpSpeed = maxJumpSpeed;
-
         while (Vector3.Distance(transform.position, dest) >= 1f)
         {
-            Vector3 moveTo = Vector3.MoveTowards(transform.position, dest, jumpSpeed * Time.deltaTime);
-            
-            scaleChange = Vector3.Distance(transform.position, moveTo) / (initDis / 2);
+            // The position it has to move to
+            // (a step for each frame)
+            Vector3 moveTo = Vector3.MoveTowards(transform.position, dest, jumpSpeed * Time.fixedDeltaTime);
 
             if (midReached)
             {
-                transform.localScale -= new Vector3(scaleChange, scaleChange, 0f);
+                if (!listIndexCounted)
+                {
+                    scIndex = scales.Count - 1;
+                    listIndexCounted = true;
+                }
+                if (scIndex >= 0 && scIndex <= scales.Count)
+                {
+                    transform.localScale -= new Vector3(scales[scIndex], scales[scIndex], 0f);
+                    scIndex--;
+                }
             }
             else
             {
+                scaleChange = Vector3.Distance(transform.position, moveTo) / midDis;
+                scales.Add(scaleChange);
                 transform.localScale += new Vector3(scaleChange, scaleChange, 0f);
             }
 
@@ -109,8 +123,6 @@ public class PlayerMovement : MonoBehaviour
 
             yield return null;
         }
-
-        transform.localScale = new Vector3(initScale, initScale, 1f);
     }
 
     #endregion
