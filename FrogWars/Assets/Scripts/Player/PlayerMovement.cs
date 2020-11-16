@@ -9,15 +9,23 @@ public class PlayerMovement : MonoBehaviour
     // Multiplier for the speed of the frog
     public float speed = 50f;
 
+    readonly float maxJumpForce = 100f;
+
+    Rigidbody2D rb2D;
+
+
+    ////// FROG JUMPING COMPONENTS ///////
+
     // Speed of the jump of the frog
     // NEEDS TO BE BIGGER THAN MOVEMENT
     public float jumpSpeed = 80f;
 
     float jumpForce = 0f;
 
-    readonly float maxJumpForce = 100f;
+    bool movingDone = true;
 
-    Rigidbody2D rb2D;
+    //////////////////////////////////////
+
 
     Collider2D cd2D;
 
@@ -47,8 +55,6 @@ public class PlayerMovement : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                print("Jumping!!!"); // FOR DEBUG
-
                 // Reset jump force
                 jumpForce = 0f;
 
@@ -62,9 +68,12 @@ public class PlayerMovement : MonoBehaviour
                     yield return new WaitForSeconds(.02f);
                 }
 
-                StartCoroutine(FrogJump());
+                if (movingDone)
+                {
+                    movingDone = false;
 
-                print("Jumped successfully!"); // FOR DEBUG
+                    StartCoroutine(FrogJump());
+                }
             }
             
             yield return null;
@@ -73,56 +82,66 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator FrogJump()
     {
-        List<float> scales = new List<float>();
-        int scIndex = 0;
-        bool listIndexCounted = false;
-
         Vector3 dest = transform.position + (transform.up * jumpForce);
-        float initDis = Vector3.Distance(transform.position, dest);
-        float midDis = Vector3.Distance(transform.position, dest - transform.position);
 
-        float initScale = transform.localScale.x;
+        StartCoroutine(Scaling(dest, Vector3.Distance(transform.position, dest), 0.2f));
 
-        bool midReached = false;
+        // The last stats;
+        Vector3 lastMoveTo = transform.position;
+        float lastDis = Vector3.Distance(transform.position, dest);
+        int sameDisCounter = 0;
 
-        // How big it will change each time
-        float scaleChange;
-
-        while (Vector3.Distance(transform.position, dest) >= 1f)
+        while (Vector3.Distance(transform.position, dest) != 0f)
         {
             // The position it has to move to
-            // (a step for each frame)
+            // (a small step for each frame for smooth movement)
             Vector3 moveTo = Vector3.MoveTowards(transform.position, dest, jumpSpeed * Time.fixedDeltaTime);
 
-            if (midReached)
+            if(lastMoveTo != moveTo)
             {
-                if (!listIndexCounted)
-                {
-                    scIndex = scales.Count - 1;
-                    listIndexCounted = true;
-                }
-                if (scIndex >= 0 && scIndex <= scales.Count)
-                {
-                    transform.localScale -= new Vector3(scales[scIndex], scales[scIndex], 0f);
-                    scIndex--;
-                }
+                // Moves a step forward to the destination
+                rb2D.MovePosition(moveTo);
+            }
+
+            if (lastDis == Vector3.Distance(transform.position, dest))
+            {
+                sameDisCounter++;
+                lastDis = Vector3.Distance(transform.position, dest);
+                if (sameDisCounter > 4)
+                    break;
             }
             else
             {
-                scaleChange = Vector3.Distance(transform.position, moveTo) / midDis;
-                scales.Add(scaleChange);
-                transform.localScale += new Vector3(scaleChange, scaleChange, 0f);
+                sameDisCounter = 0;
+                lastDis = Vector3.Distance(transform.position, dest);
             }
 
-            rb2D.MovePosition(moveTo);
+            lastMoveTo = moveTo;
 
-            if (Vector3.Distance(transform.position, dest) <= initDis / 2)
+            yield return null; // Waits until the frame ends to continue the loop
+        }
+
+        movingDone = true;
+    }
+
+    IEnumerator Scaling(Vector3 dest, float dis, float scaleChange)
+    { 
+        while (movingDone == false)
+        {
+            if (Vector3.Distance(transform.position, dest) <= dis / 2)
             {
-                midReached = true;
+                if(transform.localScale.x > 1f)
+                    transform.localScale -= new Vector3(scaleChange, scaleChange);
+            }
+            else
+            {
+                transform.localScale += new Vector3(scaleChange, scaleChange);
             }
 
             yield return null;
         }
+
+        transform.localScale = new Vector3(1f, 1f, 1f);
     }
 
     #endregion
