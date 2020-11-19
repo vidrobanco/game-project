@@ -6,6 +6,9 @@ public class FlyShooting : MonoBehaviour
 {
     public Inventory inv;
 
+    public float shootForce = 60f;
+    public Transform firePoint;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,13 +31,15 @@ public class FlyShooting : MonoBehaviour
             if (inv.FliesAvailable())
             {
                 Shoot();
-                inv.ChangeFlyCountVal(-1);
+                inv.ChangeFlyCountVal(-1, inv.selectFlyNo);
             }
         }
     }
 
     void Shoot()
     {
-        print("Somehow I got here...?");
+        var bullet = Instantiate(inv.flyPrefabs[inv.selectFlyNo], firePoint.position, firePoint.rotation);
+
+        bullet.GetComponent<Rigidbody2D>().AddForce(shootForce * firePoint.up, ForceMode2D.Impulse);
     }
 }

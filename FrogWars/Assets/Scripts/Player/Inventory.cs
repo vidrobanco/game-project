@@ -16,6 +16,8 @@ public class Inventory : MonoBehaviour
         0 
     };
 
+    public List<GameObject> flyPrefabs = new List<GameObject>();
+
     public int selectFlyNo = 0;
 
     #region External Functions
@@ -34,9 +36,9 @@ public class Inventory : MonoBehaviour
     /// is -1 it will decrease it by 1
     /// </summary>
     /// <param name="value"></param>
-    public void ChangeFlyCountVal(int value)
+    public void ChangeFlyCountVal(int value, int flyIndex)
     {
-        fliesInv[selectFlyNo] += value;
+        fliesInv[flyIndex] += value;
     }
 
     /// <summary>

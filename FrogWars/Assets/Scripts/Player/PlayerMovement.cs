@@ -16,6 +16,8 @@ public class PlayerMovement : MonoBehaviour
 
     ////// FROG JUMPING COMPONENTS ///////
 
+    Vector3 initScale;
+
     // Speed of the jump of the frog
     // NEEDS TO BE BIGGER THAN MOVEMENT
     public float jumpSpeed = 80f;
@@ -25,9 +27,6 @@ public class PlayerMovement : MonoBehaviour
     bool movingDone = true;
 
     //////////////////////////////////////
-
-
-    Collider2D cd2D;
 
     #endregion
 
@@ -107,7 +106,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 sameDisCounter++;
                 lastDis = Vector3.Distance(transform.position, dest);
-                if (sameDisCounter > 4)
+                if (sameDisCounter > 20)
                     break;
             }
             else
@@ -130,7 +129,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (Vector3.Distance(transform.position, dest) <= dis / 2)
             {
-                if(transform.localScale.x > 1f)
+                if(transform.localScale.x > initScale.x)
                     transform.localScale -= new Vector3(scaleChange, scaleChange);
             }
             else
@@ -141,7 +140,7 @@ public class PlayerMovement : MonoBehaviour
             yield return null;
         }
 
-        transform.localScale = new Vector3(1f, 1f, 1f);
+        transform.localScale = initScale;
     }
 
     #endregion
@@ -152,7 +151,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb2D = GetComponent<Rigidbody2D>();
-        cd2D = GetComponent<Collider2D>();
+        initScale = transform.localScale;
         StartCoroutine(GetJumpInput());
     }
 
@@ -167,24 +166,6 @@ public class PlayerMovement : MonoBehaviour
     {
         rb2D.velocity = new Vector3(Input.GetAxis("Horizontal") * speed * Time.fixedDeltaTime,
                                     Input.GetAxis("Vertical") * speed * Time.fixedDeltaTime);
-    }
-
-    // TO DO: Move everything to a collision manager
-    // component after
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.tag == "Fly")
-        {
-            collision.GetComponent<Fly>().IncreaseSpeed();
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.gameObject.tag == "Fly")
-        {
-            collision.GetComponent<Fly>().DecreaseSpeed();
-        }
     }
 
     // TO DO: Collide with lily pads

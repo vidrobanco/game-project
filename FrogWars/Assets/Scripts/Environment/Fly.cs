@@ -11,6 +11,8 @@ public class Fly : MonoBehaviour
     public float flySpeed = 4f;
     public float durOfDir = 3f;
 
+    public int flyType = 0;
+
     Rigidbody2D rb;
 
     #endregion
