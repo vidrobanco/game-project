@@ -17,20 +17,24 @@ public class FlyShooting : MonoBehaviour
     {
         if(Input.GetAxis("Mouse ScrollWheel") > 0f)
         {
-            inv.ChangeSelFly(1);
+            inv.ChangeSelFly(true);
+        }
+        else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+        {
+            inv.ChangeSelFly(false);
         }
         if (Input.GetMouseButtonDown(0))
         {
             if (inv.FliesAvailable())
             {
                 Shoot();
-                inv.ChangeVal(-1);
+                inv.ChangeFlyCountVal(-1);
             }
         }
     }
 
     void Shoot()
     {
-
+        print("Somehow I got here...?");
     }
 }

@@ -18,6 +18,8 @@ public class Inventory : MonoBehaviour
 
     public int selectFlyNo = 0;
 
+    #region External Functions
+
     public bool FliesAvailable()
     {
         if (fliesInv[selectFlyNo] > 0)
@@ -32,7 +34,7 @@ public class Inventory : MonoBehaviour
     /// is -1 it will decrease it by 1
     /// </summary>
     /// <param name="value"></param>
-    void ChangeVal(int value)
+    public void ChangeFlyCountVal(int value)
     {
         fliesInv[selectFlyNo] += value;
     }
@@ -42,7 +44,7 @@ public class Inventory : MonoBehaviour
     /// fliesInv list.
     /// </summary>
     /// <param name="add"></param>
-    void ChangeSelFly(bool add)
+    public void ChangeSelFly(bool add)
     {
         if (add)
         {
@@ -67,8 +69,5 @@ public class Inventory : MonoBehaviour
 
     }
 
-    void Start()
-    {
-        print(FliesAvailable());
-    }
+    #endregion
 }

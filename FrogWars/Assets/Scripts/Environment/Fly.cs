@@ -17,29 +17,28 @@ public class Fly : MonoBehaviour
 
     #region Functions
 
-    /// <summary>
-    /// Makes the fly simply go in a random 
-    /// direction for 3 seconds at a time.
-    /// </summary>
-    /// <returns></returns>
-    IEnumerator FlyMovement()
+    IEnumerator ChangeFlySpeedTimer()
     {
-        while (flyAlive)
+        while (true)
         {
-            // Moves the fly to one direction for 10 seconds
-            
-            float xSpeed = Random.Range(-flySpeed, flySpeed);
-            float ySpeed = Random.Range(-flySpeed, flySpeed);
-
-            rb.velocity = new Vector2(xSpeed, ySpeed);
-
-            if (xSpeed > 0)
-                transform.localScale = new Vector3(1f, 1f, 1f);
-            else
-                transform.localScale = new Vector3(-1f, 1f, 1f);
-
+            SetFlySpeed();
             yield return new WaitForSeconds(durOfDir);
         }
+    }
+
+    void SetFlySpeed()
+    {
+        // Moves the fly to one direction for 10 seconds
+        
+        float xSpeed = Random.Range(-flySpeed, flySpeed);
+        float ySpeed = Random.Range(-flySpeed, flySpeed);
+
+        rb.velocity = new Vector2(xSpeed, ySpeed);
+
+        if (xSpeed > 0)
+            transform.localScale = new Vector3(1f, 1f, 1f);
+        else
+            transform.localScale = new Vector3(-1f, 1f, 1f);
     }
 
     #endregion
@@ -50,25 +49,23 @@ public class Fly : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        StartCoroutine(FlyMovement());
+        StartCoroutine(ChangeFlySpeedTimer());
     }
 
-    // Update is called once per frame
-    void Update()
+    public void IncreaseSpeed()
     {
-        
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        flySpeed *= 2f;
+        print("Fly: AAAAAAAAAAAAA");
+        flySpeed *= 8f;
         durOfDir /= 2f;
+        SetFlySpeed();
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    public void DecreaseSpeed()
     {
-        flySpeed /= 2f;
+        print("Fly: Phew!!!");
+        flySpeed /= 8f;
         durOfDir *= 2f;
+        SetFlySpeed();
     }
 
     #endregion

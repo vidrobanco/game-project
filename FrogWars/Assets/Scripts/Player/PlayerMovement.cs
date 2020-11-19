@@ -152,6 +152,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb2D = GetComponent<Rigidbody2D>();
+        cd2D = GetComponent<Collider2D>();
         StartCoroutine(GetJumpInput());
     }
 
@@ -161,11 +162,29 @@ public class PlayerMovement : MonoBehaviour
         PointToMouse();
     }
 
-    // Frames can vary so FixedUpdate makes it at a fixed rate per second
+    // FPS can vary so FixedUpdate makes it at a fixed rate per second
     private void FixedUpdate()
     {
         rb2D.velocity = new Vector3(Input.GetAxis("Horizontal") * speed * Time.fixedDeltaTime,
                                     Input.GetAxis("Vertical") * speed * Time.fixedDeltaTime);
+    }
+
+    // TO DO: Move everything to a collision manager
+    // component after
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Fly")
+        {
+            collision.GetComponent<Fly>().IncreaseSpeed();
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Fly")
+        {
+            collision.GetComponent<Fly>().DecreaseSpeed();
+        }
     }
 
     // TO DO: Collide with lily pads
