@@ -13,6 +13,15 @@ public class CollisionManager : MonoBehaviour
         cd2D = GetComponent<Collider2D>();
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == "Bullet")
+        {
+            GetComponent<HP>().hp -= 10f;
+            Destroy(collision.gameObject);
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Fly")

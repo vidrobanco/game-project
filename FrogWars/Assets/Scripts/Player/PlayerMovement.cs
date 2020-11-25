@@ -24,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
 
     float jumpForce = 0f;
 
+    bool jumpCanceled = false;
     bool movingDone = true;
 
     //////////////////////////////////////
@@ -92,14 +93,24 @@ public class PlayerMovement : MonoBehaviour
 
         while (Vector3.Distance(transform.position, dest) != 0f)
         {
+            // CHECKING FOR INPUT TO CHECK IF
+            // THEY WANT TO CANCEL THE JUMP
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                jumpCanceled = true;
+            }
+
             // The position it has to move to
             // (a small step for each frame for smooth movement)
             Vector3 moveTo = Vector3.MoveTowards(transform.position, dest, jumpSpeed * Time.fixedDeltaTime);
 
-            if(lastMoveTo != moveTo)
+            if (!jumpCanceled)
             {
-                // Moves a step forward to the destination
-                rb2D.MovePosition(moveTo);
+                if (lastMoveTo != moveTo)
+                {
+                    // Moves a step forward to the destination
+                    rb2D.MovePosition(moveTo);
+                }
             }
 
             if (lastDis == Vector3.Distance(transform.position, dest))
@@ -121,6 +132,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         movingDone = true;
+        jumpCanceled = false;
     }
 
     IEnumerator Scaling(Vector3 dest, float dis, float scaleChange)
@@ -137,7 +149,19 @@ public class PlayerMovement : MonoBehaviour
                 transform.localScale += new Vector3(scaleChange, scaleChange);
             }
 
+            if (jumpCanceled)
+                break;
+
             yield return null;
+        }
+        if (jumpCanceled)
+        {
+            while(transform.localScale != initScale)
+            {
+                transform.localScale -= new Vector3(scaleChange, scaleChange);
+
+                yield return null;
+            }
         }
 
         transform.localScale = initScale;
