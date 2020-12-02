@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Lilypad : MonoBehaviour
 {
-    float moveSpeed = 1f;
+    float moveSpeed = 0.1f;
 
     Rigidbody2D rb2D;
     Vector3 dir;
@@ -33,7 +33,7 @@ public class Lilypad : MonoBehaviour
     {
         while (true)
         {
-            rb2D.MovePosition(dir * moveSpeed);
+            rb2D.MovePosition(transform.position + (dir * moveSpeed));
 
             yield return null;
         }
