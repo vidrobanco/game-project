@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using System;
 
 public class LilypadManager : MonoBehaviour
 {
@@ -13,7 +15,9 @@ public class LilypadManager : MonoBehaviour
     void Start()
     {
         // Gets all the lilypad parent objects
-        var lpArrGameObjs = GameObject.FindGameObjectsWithTag("LilyPadParent"); 
+        List<GameObject> lpArrGameObjs = GameObject.FindGameObjectsWithTag("LilyPadParent").ToList();
+
+        lpArrGameObjs.Sort((a, b) => Int32.Parse(a.name).CompareTo(Int32.Parse(b.name))); 
 
         foreach (GameObject lpArrParent in lpArrGameObjs)
         {
@@ -38,7 +42,6 @@ public class LilypadManager : MonoBehaviour
         {
             foreach (var lilypad in lilypads)
             {
-                print(lilypad.name);
                 lilypad.GetComponent<Lilypad>().StartMoving();
             }
 

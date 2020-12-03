@@ -13,7 +13,7 @@ public class Lilypad : MonoBehaviour
     void Start()
     {
         rb2D = GetComponent<Rigidbody2D>();
-        dir = transform.position - GameObject.Find("LilyPadArr1").transform.position;
+        dir = transform.position - Vector3.zero;
 
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
 
