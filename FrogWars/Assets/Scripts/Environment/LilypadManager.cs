@@ -33,6 +33,12 @@ public class LilypadManager : MonoBehaviour
             lilypadArrs.Add(lpArrChildren);
         }
 
+        foreach(var lPadList in lilypadArrs)
+        {
+            foreach(var lPad in lPadList)
+                print(lPad.transform.parent.gameObject.name);
+        }
+
         StartCoroutine(SendOffLilyPads());
     }
 

@@ -182,9 +182,6 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Camera.main.transform.position = new Vector3(transform.position.x,
-                                                     transform.position.y,
-                                                     -10f);
         PointToMouse();
     }
 
