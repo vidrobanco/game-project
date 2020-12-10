@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3221527409215208725}
   m_Layer: 9
   m_Name: debugLilyPad
-  m_TagString: Untagged
+  m_TagString: Lilypad
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

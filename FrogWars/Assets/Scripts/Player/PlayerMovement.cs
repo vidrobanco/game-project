@@ -6,6 +6,21 @@ public class PlayerMovement : MonoBehaviour
 {
     #region Essential Components
 
+    public HP hpComponent;
+
+    /////// SWIMMING COMPONENTS ///////
+
+    bool isSwim = false;
+
+    public bool onLilyPad = true;
+
+    public float maxSwimTime = 4f;
+
+    float swimTime;
+    
+    ///////////////////////////////////
+
+
     // Multiplier for the speed of the frog
     public float speed = 50f;
 
@@ -33,6 +48,12 @@ public class PlayerMovement : MonoBehaviour
 
     #region Functions
     
+    void FrogDeath()
+    {
+        GameObject.Find("Game Manager").transform.GetChild(0).gameObject.SetActive(true);
+        hpComponent.hp = 0f;
+    }
+
     void PointToMouse()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -41,6 +62,33 @@ public class PlayerMovement : MonoBehaviour
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
 
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
+    }
+
+    IEnumerator Swim()
+    {
+        if (!isSwim)
+        {
+            isSwim = true;
+            speed /= 2f;
+
+            while (!onLilyPad)
+            {
+                swimTime -= 0.1f;
+
+                if(swimTime <= 0f)
+                {
+                    FrogDeath();
+                    break;
+                }
+
+                yield return new WaitForSeconds(0.1f);
+            }
+
+            speed *= 2f;
+
+            swimTime = maxSwimTime;
+            isSwim = false;
+        }
     }
 
     /// <summary>
@@ -68,7 +116,7 @@ public class PlayerMovement : MonoBehaviour
                     yield return new WaitForSeconds(.02f);
                 }
 
-                if (movingDone)
+                if (movingDone && onLilyPad)
                 {
                     movingDone = false;
 
@@ -176,6 +224,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb2D = GetComponent<Rigidbody2D>();
         initScale = transform.localScale;
+        swimTime = maxSwimTime;
         StartCoroutine(GetJumpInput());
     }
 
@@ -190,9 +239,26 @@ public class PlayerMovement : MonoBehaviour
     {
         rb2D.velocity = new Vector3(Input.GetAxis("Horizontal") * speed * Time.fixedDeltaTime,
                                     Input.GetAxis("Vertical") * speed * Time.fixedDeltaTime);
+
+        if (onLilyPad != true && !isSwim)
+            StartCoroutine(Swim());
     }
 
-    // TO DO: Collide with lily pads
+    void OnTriggerStay2D(Collider2D collision)
+    {
+        if(collision.gameObject.tag == "Lilypad")
+        {
+            onLilyPad = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Lilypad")
+        {
+            onLilyPad = false;
+        }
+    }
 
     #endregion
 }
