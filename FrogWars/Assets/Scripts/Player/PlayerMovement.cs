@@ -16,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
 
     public float maxSwimTime = 4f;
 
-    float swimTime;
+    public float swimTime;
     
     ///////////////////////////////////
 
@@ -119,7 +119,7 @@ public class PlayerMovement : MonoBehaviour
                 if (movingDone && onLilyPad)
                 {
                     movingDone = false;
-
+                    GetComponent<Collider2D>().isTrigger = true;
                     StartCoroutine(FrogJump());
                 }
             }
@@ -181,6 +181,7 @@ public class PlayerMovement : MonoBehaviour
 
         movingDone = true;
         jumpCanceled = false;
+        GetComponent<Collider2D>().isTrigger = false;
     }
 
     IEnumerator Scaling(Vector3 dest, float dis, float scaleChange)

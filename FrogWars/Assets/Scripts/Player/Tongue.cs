@@ -62,7 +62,8 @@ public class Tongue : MonoBehaviour
     {
         if (collision.gameObject.tag == "Fly")
         {
-            collision.transform.parent = transform;
+            var flyIfollower = collision.gameObject.AddComponent(typeof(ItemFollower)) as ItemFollower;
+            flyIfollower.itemToFollow = transform.GetChild(0);
             StartCoroutine(WaitForTongueToStop(collision.gameObject));
         }
     }
